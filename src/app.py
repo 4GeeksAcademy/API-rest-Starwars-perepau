@@ -40,6 +40,7 @@ if __name__ == '__main__':
 def get_users():
     users = db.session.execute(select(User)).scalars().all()
     return jsonify([user.serialize() for user in users]), 200
+
 @app.route("/users/<int:user_id>", methods=["GET"])
 def get_user(user_id):
     user = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
