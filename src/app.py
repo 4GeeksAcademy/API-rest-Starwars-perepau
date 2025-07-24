@@ -96,7 +96,11 @@ def create_people():
     data = request.get_json()
     if not data or "name" not in data:
         return jsonify({"error": "Missing data"}), 400
-    new_person = People(name=data["name"])
+    new_person = People(
+    name=data["name"],
+    gender=data.get('gender'),
+    user_id=data.get('user_id')
+    )
     db.session.add(new_person)
     db.session.commit()
     return jsonify(new_person.serialize()), 201
@@ -179,9 +183,13 @@ def get_planet(planet_id):
 @app.route("/planets", methods=["POST"])
 def create_planet():
     data = request.get_json()
-    if not data or "name" not in data or "model" not in data:
+    if not data or "name" not in data or "terrain" not in data or "climate" not in data:
         return jsonify({"error": "Missing data"}), 400
-    new_planet = Planet(name=data["name"], model=data["model"])
+    new_planet = Planet(
+        name=data["name"], 
+        terrain=data["terrain"],
+        climate=data["climate"]
+        )
     db.session.add(new_planet)
     db.session.commit()
     return jsonify(new_planet.serialize()), 201
@@ -248,6 +256,19 @@ def delete_favorite_people(people_id):
     db.session.commit()
     return jsonify({"message": "Favorite deleted"}), 204
 
+
+@app.route("/users/favorites", methods=['GET'])
+def get_user_favorites():
+    user_id=request.args.get("user_id", type=int)
+    if not user_id:
+        return jsonify({"error": "Missing user_id"}), 400
+    user= db.session.get(User, user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({
+        "favorite_people": [fp.serialize() for fp in user.favorite_people],
+        "favorite_planets": [fp.serialize() for fp in user.favorite_planets]
+    }), 200
 
 
 

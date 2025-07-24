@@ -20,8 +20,8 @@ class User(db.Model):
 class People(db.Model):
     __tablename__ = "peoples"
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    gender: Mapped[str] = mapped_column(String(80), nullable=False)
+    name: Mapped[str] = mapped_column(String(120), unique=True, nullable=True)
+    gender: Mapped[str] = mapped_column(String(80), nullable=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="people")
     favorites: Mapped[list["FavoritePeople"]] = relationship("FavoritePeople", backref="people", cascade="all, delete-orphan")
